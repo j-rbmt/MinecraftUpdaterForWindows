@@ -10,7 +10,7 @@ import logging
 import requests
 
 # CONFIGURATION
-UPDATE_TO_SNAPSHOT = True
+UPDATE_TO_SNAPSHOT = False
 MANIFEST_URL = "https://launchermeta.mojang.com/mc/game/version_manifest.json"
 BACKUP_DIR = 'world_backups'
 JARBACKUP_DIR = 'previous_jars'
@@ -23,12 +23,15 @@ os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 
 def process_exists(process_name):
-    call = 'TASKLIST', '/FI', 'imagename eq %s' % process_name
-    # use buildin check_output right away
-    output = subprocess.check_output(call).decode()
-    # check in last line for process name
+    call = ['TASKLIST', '/FI', f'imagename eq {process_name}']
+    try:
+        # decode using system default encoding (handles non-UTF8 locales)
+        output = subprocess.check_output(call).decode(errors='ignore')
+    except UnicodeDecodeError:
+        # fallback if decode still fails
+        output = subprocess.check_output(call).decode('latin-1', errors='ignore')
+
     last_line = output.strip().split('\r\n')[-1]
-    # because Fail message could be translated
     return last_line.lower().startswith(process_name.lower())
 
 # retrieve version manifest
@@ -50,7 +53,7 @@ if not os.path.exists('Manual_Run.bat'):
     v = open('Manual_Run.bat', 'w')
     v.write('@ECHO OFF')
     v.write('\n')
-    v.write('java -Xms4096M -Xmx4096M -jar minecraft_server.jar')
+    v.write('java -Xms4096M -Xmx4096M -jar minecraft_server.jar nogui')
     v.write('\n')
     v.write('pause')
     v.close()
@@ -129,14 +132,12 @@ for version in data['versions']:
             logging.info('Backed up world.')
             print('Backed up world.')
             
-            logging.info('Starting server...')
-            print('Starting server...')
-            logging.info('='*78)
-            
-            os.system('start call Manual_Run.bat')
         else:
             print("Server is already up to date.")
             print('Latest version is ' + str(minecraft_ver))
             time.sleep(5)
+        logging.info('Starting server...')
+        print('Starting server...')
+        logging.info('='*78)
+        os.system('start call Manual_Run.bat')
         break
-
