@@ -1,5 +1,6 @@
 # MinecraftUpdater
 (Updated by swolewizard for windows from eclair4151)
+(Updated by j-rbmt for 2026 from swolewizard)
 
 This is a python package to automate the updating of your server. Its so annoying to try and download the jar,
 ftp it over, stop the server, back up your world, etc. This automates alll that. just git clone this in the root of
@@ -27,17 +28,16 @@ This will update your server automatically when a new minecraft update is releas
 ```
 @ECHO OFF
 
-java -Xms4096M -Xmx4096M -jar minecraft_server.jar
+java -Xms4096M -Xmx4096M -jar minecraft_server.jar nogui
 
 pause
 ```
 If you don't have this .bat, it'll automatically create one for you.
 
-## Make sure your server starts with a GUI and console
+## Make sure your server starts with no GUI
            
-The way this code works is it force closes java.exe to stop the server enabling the cmd prompt to save the world, so you probably can't host a server and play minecraft at the same time on the same computer. Haven't tested that though
-
-![Minecraft-Server-Setup-GUI](https://user-images.githubusercontent.com/46814896/123729435-14084d00-d8e9-11eb-975e-a602d96b3fe8.png)
+you can start the server with no gui so less ressources are used. Minecraft can be opened in the same computer and can be
+connected to the server if needed.
         
 ## Updated java
 Make sure your java and java JDK SE is updated, if you're getting server starting errors.
